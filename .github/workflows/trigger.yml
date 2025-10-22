@@ -1,6 +1,8 @@
 name: Trigger
 
 on:
+  schedule:
+    - cron: '15 4 * * *'  # 06:15 CET
   workflow_dispatch:
 
 jobs:
