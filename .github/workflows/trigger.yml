@@ -6,6 +6,9 @@ on:
 jobs:
   trigger:
     runs-on: ubuntu-latest
+    env:
+      EMAIL: ${{ secrets.EMAIL }}
+      JIRA_API_KEY: ${{ secrets.JIRA_API_KEY }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
