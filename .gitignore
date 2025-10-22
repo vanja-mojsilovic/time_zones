@@ -1,0 +1,8 @@
+# Ignore .env files anywhere
+**/.env
+
+# Ignore IntelliJ IDEA project files anywhere
+**/.idea/
+
+# Ignore Maven build output folders anywhere
+**/target/
