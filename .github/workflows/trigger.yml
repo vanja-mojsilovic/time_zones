@@ -1,10 +1,10 @@
 name: Trigger
 
 on:
-  workflow_dispatch:  # Allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
-  run-manually:
+  trigger:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

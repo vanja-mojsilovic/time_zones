@@ -6,15 +6,29 @@ import java.util.List;
 
 public class MainClass {
     public static void main(String[] args) {
-        Dotenv dotenv = Dotenv.load();
+        String email;
+        String apiToken;
 
-        String email = dotenv.get("EMAIL");
-        String apiToken = dotenv.get("JIRA_API_KEY");
+        try {
+            Dotenv dotenv = Dotenv.configure()
+                    .ignoreIfMalformed()
+                    .ignoreIfMissing()
+                    .load();
 
-        // JQL filter
+            email = dotenv.get("EMAIL", System.getenv("EMAIL"));
+            apiToken = dotenv.get("JIRA_API_KEY", System.getenv("JIRA_API_KEY"));
+        } catch (Exception e) {
+            System.err.println("Warning: Failed to load .env file. Falling back to system environment variables.");
+            email = System.getenv("EMAIL");
+            apiToken = System.getenv("JIRA_API_KEY");
+        }
+
+        if (email == null || apiToken == null) {
+            System.err.println("Missing EMAIL or JIRA_API_KEY. Please set them in .env or as environment variables.");
+            return;
+        }
+
         String jql = "summary ~ \"Go Live\" AND status = QA";
-
-        //  suppression list
         List<String> suppressionList = List.of("");
 
         try {
