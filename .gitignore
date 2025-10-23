@@ -6,3 +6,5 @@
 
 # Ignore Maven build output folders anywhere
 **/target/
+
+**/credentials.json
