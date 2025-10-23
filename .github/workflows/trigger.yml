@@ -11,6 +11,8 @@ jobs:
     env:
       EMAIL: ${{ secrets.EMAIL }}
       JIRA_API_KEY: ${{ secrets.JIRA_API_KEY }}
+      SPOTHOPPER_COOKIES: ${{ secrets.SPOTHOPPER_COOKIES }}
+      GOOGLE_CREDENTIALS_BASE64: ${{ secrets.GOOGLE_CREDENTIALS_BASE64 }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
