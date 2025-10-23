@@ -9,3 +9,5 @@
 
 # Ignore credentials.json at project root
 /credentials.json
+
+temp-creds/
