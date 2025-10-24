@@ -26,7 +26,7 @@ public class GoogleSheetsWriter {
                 .execute();
 
         List<List<Object>> rows = new ArrayList<>();
-        List<Object> header = List.of("id", "name", "hours_of_operation", "time_zone", "zip", "latitude", "longitude", "metro_area_id", "metro_area_name");
+        List<Object> header = List.of("id", "name", "hours_of_operation", "time_zone", "zip", "latitude", "longitude", "metro_area_id", "metro_area_name","date");
         rows.add(header);
 
         for (Map<String, Object> spot : spots) {
@@ -74,4 +74,19 @@ public class GoogleSheetsWriter {
                 .setApplicationName(APPLICATION_NAME)
                 .build();
     }
+
+    public static void ArchiveDailyTasks(String sourceRange, String destinationRange) throws IOException, GeneralSecurityException {
+        Sheets service = getSheetsService();
+        ValueRange sourceData = service.spreadsheets().values()
+                .get(SPREADSHEET_ID, sourceRange)
+                .execute();
+        ValueRange destinationBody = new ValueRange().setValues(sourceData.getValues());
+        service.spreadsheets().values()
+                .append(SPREADSHEET_ID, destinationRange, destinationBody)
+                .setValueInputOption("RAW")
+                .setInsertDataOption("INSERT_ROWS")
+                .setIncludeValuesInResponse(false)
+                .execute();
+    }
+
 }

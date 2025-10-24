@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Methods {
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -80,7 +82,9 @@ public class Methods {
 
 
     public static List<Map<String, Object>> fetchSpotsWithMetroNames(List<String> spotIdList, String email, String cookie) throws IOException {
+        // Declare result list
         List<Map<String, Object>> allSpots = new ArrayList<>();
+        // Iterate over input spot ID list
         for (String idStr : spotIdList) {
             int id;
             try {
@@ -89,6 +93,7 @@ public class Methods {
                 System.err.println("Skipping invalid spot ID: " + idStr);
                 continue;
             }
+            // Spothopper API request for spots table
             URL url = new URL("https://www.spothopperapp.com/api/spots/" + id);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -112,6 +117,7 @@ public class Methods {
                 }
             }
         }
+        // Spothopper API request for metro_areas table
         URL metroUrl = new URL("https://www.spothopperapp.com/api/metro_areas");
         HttpURLConnection metroConn = (HttpURLConnection) metroUrl.openConnection();
         metroConn.setRequestMethod("GET");
@@ -138,6 +144,7 @@ public class Methods {
             }
 
         }
+        // Join spots and metro_areas
         for (Map<String, Object> spot : allSpots) {
             Object metroId = spot.get("metro_area_id");
             Integer metroKey = null;
@@ -152,6 +159,7 @@ public class Methods {
             String metroName = metroMap.getOrDefault(metroKey, "N/A");
             spot.put("metro_area_name", metroName);
         }
+        // return result
         return allSpots;
     }
 
@@ -159,6 +167,7 @@ public class Methods {
         Map<String, Object> cleaned = new LinkedHashMap<>();
         cleaned.put("id", spot.get("id"));
         cleaned.put("name", spot.get("name"));
+        // Formatting working hours block
         Object rawHours = spot.get("hours_of_operation");
         StringBuilder formatted = new StringBuilder("{");
         if (rawHours instanceof List) {
@@ -186,11 +195,19 @@ public class Methods {
         }
         formatted.append("}");
         cleaned.put("hours_of_operation", formatted.toString());
-        cleaned.put("time_zone", spot.getOrDefault("time_zone", "N/A"));
-        cleaned.put("zip", spot.getOrDefault("zip", "N/A"));
-        cleaned.put("latitude", spot.getOrDefault("latitude", "N/A"));
-        cleaned.put("longitude", spot.getOrDefault("longitude", "N/A"));
-        cleaned.put("metro_area_id", spot.getOrDefault("metro_area_id", "N/A"));
+        Object timeZone = spot.get("time_zone");
+        cleaned.put("time_zone", timeZone != null ? timeZone : "NULL");
+        Object zip = spot.get("zip");
+        cleaned.put("zip", zip != null ? zip : "NULL");
+        Object latitude = spot.get("latitude");
+        cleaned.put("latitude", latitude != null ? latitude : "NULL");
+        Object longitude = spot.get("longitude");
+        cleaned.put("longitude", longitude != null ? longitude : "NULL");
+        Object metroAreaId = spot.get("metro_area_id");
+        cleaned.put("metro_area_id", metroAreaId != null ? metroAreaId : "NULL");
+        LocalDate currentDate = LocalDate.now();
+        String formattedDate = currentDate.format(DateTimeFormatter.ISO_LOCAL_DATE);
+        cleaned.put("date", formattedDate != null ? formattedDate : "NULL");
         return cleaned;
     }
 
@@ -199,7 +216,7 @@ public class Methods {
         try {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH);
             LocalTime time = LocalTime.parse(raw, formatter);
-            return time.toString(); // "HH:mm:ss"
+            return time.toString();
         } catch (DateTimeParseException e) {
             System.err.println("Invalid time format: " + raw);
             return "NULL";
