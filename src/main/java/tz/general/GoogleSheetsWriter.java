@@ -19,6 +19,12 @@ public class GoogleSheetsWriter {
     public static void writeSpotsToSheet(List<Map<String, Object>> spots) throws IOException, GeneralSecurityException {
         Sheets service = getSheetsService();
 
+        // Clear the sheet
+        ClearValuesRequest clearRequest = new ClearValuesRequest();
+        service.spreadsheets().values()
+                .clear(SPREADSHEET_ID, SHEET_NAME, clearRequest)
+                .execute();
+
         List<List<Object>> rows = new ArrayList<>();
         List<Object> header = List.of("id", "name", "hours_of_operation", "time_zone", "zip", "latitude", "longitude", "metro_area_id", "metro_area_name");
         rows.add(header);
